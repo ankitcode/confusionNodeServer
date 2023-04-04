@@ -21,15 +21,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("12345-67890-09876-54321"));
 app.use(express.static(path.join(__dirname, "public")));
+var session = require("express-session");
+var FileStore = require("session-file-store")(session);
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/dishes", dishRouter);
 app.use("/promotions", promoRouter);
 app.use("/leaders", leaderRouter);
+app.use(
+  session({
+    name: "session-id",
+    secret: "12345-67890-09876-54321",
+    saveUninitialized: false,
+    resave: false,
+    store: new FileStore(),
+  })
+);
 
 function auth(req, res, next) {
-  if (!req.signedCookies.user) {
+  console.log(req.session);
+
+  if (!req.session.user) {
     var authHeader = req.headers.authorization;
     if (!authHeader) {
       var err = new Error("You are not authenticated!");
@@ -44,7 +57,7 @@ function auth(req, res, next) {
     var user = auth[0];
     var pass = auth[1];
     if (user == "admin" && pass == "password") {
-      res.cookie("user", "admin", { signed: true });
+      req.session.user = "admin";
       next(); // authorized
     } else {
       var err = new Error("You are not authenticated!");
@@ -53,7 +66,8 @@ function auth(req, res, next) {
       next(err);
     }
   } else {
-    if (req.signedCookies.user === "admin") {
+    if (req.session.user === "admin") {
+      console.log("req.session: ", req.session);
       next();
     } else {
       var err = new Error("You are not authenticated!");
@@ -62,6 +76,7 @@ function auth(req, res, next) {
     }
   }
 }
+
 app.use(auth);
 
 // catch 404 and forward to error handler
