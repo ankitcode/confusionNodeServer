@@ -11,6 +11,8 @@ var promoRouter = require("./routes/promoRouter");
 var leaderRouter = require("./routes/leaderRouter");
 
 var app = express();
+app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieParser("12345-67890-09876-54321"));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -19,25 +21,18 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser("12345-67890-09876-54321"));
-app.use(express.static(path.join(__dirname, "public")));
 var session = require("express-session");
 var FileStore = require("session-file-store")(session);
 var config = require('./config');
 
+var passport = require("passport");
+var authenticate = require("./authenticate");
+app.use(passport.initialize());
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/dishes", dishRouter);
 app.use("/promotions", promoRouter);
 app.use("/leaders", leaderRouter);
-
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-
-var passport = require("passport");
-var authenticate = require("./authenticate");
-
-app.use(passport.initialize());
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
