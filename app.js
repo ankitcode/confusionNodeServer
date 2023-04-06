@@ -11,6 +11,17 @@ var promoRouter = require("./routes/promoRouter");
 var leaderRouter = require("./routes/leaderRouter");
 
 var app = express();
+// Secure traffic only
+app.all("*", (req, res, next) => {
+  if (req.secure) {
+    return next();
+  } else {
+    res.redirect(
+      307,
+      "https://" + req.hostname + ":" + app.get("secPort") + req.url
+    );
+  }
+});
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser("12345-67890-09876-54321"));
 
@@ -23,7 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 var session = require("express-session");
 var FileStore = require("session-file-store")(session);
-var config = require('./config');
+var config = require("./config");
 
 var passport = require("passport");
 var authenticate = require("./authenticate");
