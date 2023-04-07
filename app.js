@@ -9,10 +9,13 @@ var usersRouter = require("./routes/users");
 var dishRouter = require("./routes/dishRouter");
 var promoRouter = require("./routes/promoRouter");
 var leaderRouter = require("./routes/leaderRouter");
+const uploadRouter = require('./routes/uploadRouter');
 
 var app = express();
+app.use('/imageUpload',uploadRouter);
+
 // Secure traffic only
-app.all("*", (req, res, next) => {
+/*app.all("*", (req, res, next) => {
   if (req.secure) {
     return next();
   } else {
@@ -22,6 +25,7 @@ app.all("*", (req, res, next) => {
     );
   }
 });
+*/
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser("12345-67890-09876-54321"));
 
