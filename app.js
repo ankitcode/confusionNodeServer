@@ -9,6 +9,7 @@ var usersRouter = require("./routes/users");
 var dishRouter = require("./routes/dishRouter");
 var promoRouter = require("./routes/promoRouter");
 var leaderRouter = require("./routes/leaderRouter");
+var favoriteRouter = require("./routes/favoriteRouter");
 const uploadRouter = require('./routes/uploadRouter');
 
 var app = express();
@@ -24,8 +25,8 @@ app.use('/imageUpload',uploadRouter);
       "https://" + req.hostname + ":" + app.get("secPort") + req.url
     );
   }
-});
-*/
+});*/
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser("12345-67890-09876-54321"));
 
@@ -48,6 +49,7 @@ app.use("/users", usersRouter);
 app.use("/dishes", dishRouter);
 app.use("/promotions", promoRouter);
 app.use("/leaders", leaderRouter);
+app.use("/favorites", favoriteRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
